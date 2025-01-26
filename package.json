@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@nuxt/ui": "^2.21.0",
+    "@types/bcryptjs": "^2.4.6",
     "@vueup/vue-quill": "^1.2.0",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
     "mongoose": "^8.9.5",
@@ -22,5 +24,8 @@
     "vue-router": "latest",
     "vuedraggable": "^4.1.0",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2"
   }
 }
