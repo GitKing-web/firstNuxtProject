@@ -5,7 +5,7 @@ export interface UserDocument extends Document {
     username: string;
     password: string;
     email: string;
-    // comparePassword (password: string): Promise<boolean>;
+    comparePassword (password: string): Promise<boolean>;
 }
 
 const UserSchema = new Schema({

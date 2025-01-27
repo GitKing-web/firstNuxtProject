@@ -11,5 +11,10 @@ const SignUpSchema =
         path: ['confirmPassword']
     })
 
-
-export default { SignUpSchema }
+const SignInSchema = z.object({
+    identifier: z.string().min(3),
+    password: z.string().min(8)
+}).refine(data => {
+    return data.identifier.includes('@') ? z.string().email().safeParse(data.identifier).success : data.identifier.length >= 3
+})
+export default { SignUpSchema, SignInSchema }
