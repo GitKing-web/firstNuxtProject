@@ -1,7 +1,19 @@
-<script></script>
+<script setup>
+import authGlobal from '~/middlewares/auth.global';
+
+    definePageMeta({
+        middleware: authGlobal,
+        ssr: false,
+    })
+</script>
 
 <template>
     <div>
-        <h3>Home page</h3>
+      <h1>Dashboard</h1>
+      <!-- Your dashboard content -->
     </div>
-</template>
+    <div>
+      <p>Loading...</p>
+    </div>
+  </template>
+  

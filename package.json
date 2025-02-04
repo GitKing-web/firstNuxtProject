@@ -11,11 +11,14 @@
   },
   "dependencies": {
     "@nuxt/ui": "^2.21.0",
+    "@sidebase/nuxt-auth": "^0.10.0",
     "@types/bcryptjs": "^2.4.6",
     "@vueup/vue-quill": "^1.2.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "cookie": "^1.0.2",
     "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "next-auth": "^4.21.1",
     "nuxt": "^3.15.2",
@@ -26,6 +29,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2"
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.8"
   }
 }
