@@ -6,6 +6,8 @@ export default defineEventHandler( async (event) => {
 
     const validatedData = authSchema.SignUpSchema.safeParse(body)
 
+    if(validatedData.data?.username === "" || validatedData.data?.email === "" || validatedData.data?.password === "" || validatedData.data?.confirmPassword === "")  return { statusCode: 400, message: "Fields cannot be Empty"}
+
     if(!validatedData.success){
         return { statusCode: 401, message: validatedData.error.issues[0]}
     }

@@ -1,4 +1,4 @@
-import { defineNuxtRouteMiddleware, navigateTo, useCookie } from "nuxt/app";
+import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
 
 export default defineNuxtRouteMiddleware(async (to) => {
     if(import.meta.server) return
@@ -6,10 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
 
     if(!token && to.path !== '/auth/signin'){
-        if(to.path !== '/ auth/signin')
             return navigateTo('/auth/signin', { replace: true})
-
-        return;
     }
 
     try {
@@ -19,9 +16,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
         })
 
         if(!res.authenticated){
-            navigateTo('/auth/signin', { replace: true } );
             localStorage.removeItem('token')
-            return
+            return navigateTo('/auth/signin', { replace: true } );
         }
         //@ts-ignore
         

@@ -5,6 +5,13 @@ import authSchema from '~/schema/auth.schema';
 const router = useRouter()
 const isLoading = ref(false)
 const isRedirecting = ref(false)
+const isClient = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
+
+onMounted(() => {
+  isClient.value = true
+})
 
 const formState = reactive({
   identifier: '',
@@ -13,73 +20,96 @@ const formState = reactive({
 
 
 const handleSignin = async () => {
-
+  isLoading.value = true
+  
+  const res = await $fetch('/api/auth/signin', {
+    method: 'POST',
+    body: formState
+  })
   try {
-    isLoading.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
 
-    const res = await $fetch('/api/auth/signin', {
-      method: 'POST',
-      body: formState
-    })
     
     if(res.statusCode == 200){
-      console.log(res);
+      // @ts-ignore
+      successMessage.value = res.message || 'User Logged in successfully'
       //@ts-ignore
       localStorage.setItem('token', res.token)
+      isRedirecting.value = true
       setTimeout(() => {
         router.push('/')
       }, 2000)
     }else{
-      console.log('Login failed: ' + res.statusCode);
-      console.log(res.message);
+      //@ts-ignore
+      throw new Error(res?.message || 'Invalid Credentials')
+      // console.log('Login failed: ' + res.statusCode);
+      // console.log(res.message);
     }
   } catch (error) {
-    console.log(error);
+    //@ts-expect-error
+    errorMessage.value = res.message || 'Login failed, check your credentials'
+
+    setTimeout(() => {
+      formState.identifier = ''
+      formState.password = ''
+      errorMessage.value = ''
+      isLoading.value = false
+    }, 5000)
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
 
 <template>
   <div class="grid lg:grid-cols-2 h-screen">
-
-    <div class="left place-self-center w-full px-8 md:px-16 
-    lg:px-24 xl:px-36 2xl:px-52">
-
+    <div class="left place-self-center w-full px-8 md:px-16 lg:px-24 xl:px-36 2xl:px-52">
       <div class="header text-center mb-6">
         <div class="flex justify-center mb-2">
           <Logo />
         </div>
         <h1 class="text-xl font-bold mt-4">Login to your Account</h1>
-
-
       </div>
 
-      
-      <UCard class="mt-6 p-2" v-if="!isRedirecting">
-          <UForm :state="formState" :schema="authSchema.SignInSchema"   @submit.prevent="handleSignin">
+      <!-- Success Message -->
+      <Transition>
+        <div v-if="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 text-center">
+          {{ successMessage }}
+        </div>
+      </Transition>
 
-            <UFormGroup class="mb-4" name="identifier" label="Email/Username">
-              <UInput v-model="formState.identifier" type="text" name="identifier" class="name" required />
-            </UFormGroup>
+      <!-- Error Message -->
+      <Transition>
+        <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <p>{{ errorMessage }}</p>
+        </div>
+      </Transition>
 
-            <UFormGroup class="mb-4" name="password" label="Password">
-              <UInput v-model="formState.password" type="password" name="password" required />
-            </UFormGroup>
+      <!-- Sign-in Form -->
+      <UCard class="mt-6 p-2" v-if="isClient && !isRedirecting">
+        <UForm :state="formState" :schema="authSchema.SignInSchema" @submit.prevent="handleSignin">
+          <UFormGroup class="mb-4" name="identifier" label="Email/Username">
+            <UInput v-model="formState.identifier" type="text" name="identifier" class="name" required />
+          </UFormGroup>
 
-            <UButton @click.prevent=handleSignin  block :loading="isLoading">Signin</UButton>
+          <UFormGroup class="mb-4" name="password" label="Password">
+            <UInput v-model="formState.password" type="password" name="password" required />
+          </UFormGroup>
 
-          </UForm>
-        </UCard>
+          <UButton @click.prevent="handleSignin" block :loading="isLoading"> Sign In </UButton>
+        </UForm>
+      </UCard>
 
-        <div v-else class="text-center mt-4">
-        <p class="text-gray-500">Redirecting to your dashboard...</p>
-        <UIcon name="loading" class="animate-spin text-gray-600" size="lg" />
-      </div>
-
+      <!-- Redirecting Message -->
+      <Transition>
+        <div v-if="isRedirecting" class="text-center mt-4 text-gray-500">
+          Redirecting to Dashboard...
+        </div>
+      </Transition>
     </div>
 
     <div class="right hidden lg:block"></div>
-
   </div>
 </template>
 
